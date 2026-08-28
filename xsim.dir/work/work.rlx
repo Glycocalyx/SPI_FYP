@@ -1,9 +1,0 @@
-0.7
-2020.2
-Nov 18 2020
-09:47:47
-E:/projects/spi-fyp/rtl/spi_master.sv,1787729266,systemVerilog,,E:/projects/spi-fyp/rtl/spi_slave.sv,,spi_master,,,,,,,,
-E:/projects/spi-fyp/rtl/spi_slave.sv,1787817018,systemVerilog,,E:/projects/spi-fyp/tb/spi_slave_tb.sv,,spi_slave,,,,,,,,
-E:/projects/spi-fyp/tb/spi_master_tb.sv,1787729991,systemVerilog,,,,spi_master_tb,,,,,,,,
-E:/projects/spi-fyp/tb/spi_slave_model.sv,1787729235,systemVerilog,,E:/projects/spi-fyp/tb/spi_master_tb.sv,,spi_slave_model,,,,,,,,
-E:/projects/spi-fyp/tb/spi_slave_tb.sv,1787896020,systemVerilog,,,,spi_slave_tb,,,,,,,,

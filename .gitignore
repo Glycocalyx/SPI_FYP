@@ -1,0 +1,31 @@
+# Vivado / XSim generated files
+.Xil/
+xsim.dir/
+
+*.wdb
+
+webtalk.jou
+webtalk.log
+webtalk_*.backup.jou
+webtalk_*.backup.log
+
+xelab.log
+
+xsim.jou
+xsim.log
+xsim_*.backup.jou
+xsim_*.backup.log
+
+xvlog.log
+xvlog.pb
+
+# Vivado generated cache/project folders
+.cache/
+.gen/
+.hw/
+.ip_user_files/
+
+# Temporary files
+*.tmp
+*.bak
+*~
