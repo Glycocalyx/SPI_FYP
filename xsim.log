@@ -1,0 +1,30 @@
+#-----------------------------------------------------------
+# xsim v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Fri Aug 28 13:56:29 2026
+# Process ID: 81496
+# Current directory: E:/projects/spi-fyp
+# Command line: xsim.exe -mode tcl -source {xsim.dir/spi_slave_tb_sim/xsim_script.tcl}
+# Log file: E:/projects/spi-fyp/xsim.log
+# Journal file: E:/projects/spi-fyp\xsim.jou
+#-----------------------------------------------------------
+source xsim.dir/spi_slave_tb_sim/xsim_script.tcl
+# xsim {spi_slave_tb_sim} -autoloadwcfg -runall
+Vivado Simulator 2020.2
+Time resolution is 1 ps
+run -all
+PASS: Slave 0 selected correctly, CSB = 10
+PASS: Slave MISO output enable asserted
+PASS: Slave received 0xa5 from Master
+PASS: Master received 0x3c from Slave
+PASS: Slave rx_valid was asserted after 8 bits
+PASS: CSB released after transaction
+PASS: SCLK returned to Mode 0 idle level
+PASS: Slave released MISO after transaction
+==================================================
+SPI Slave RTL verification completed.
+==================================================
+$finish called at time : 770 ns : File "E:/projects/spi-fyp/tb/spi_slave_tb.sv" Line 364
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Aug 28 13:56:38 2026...

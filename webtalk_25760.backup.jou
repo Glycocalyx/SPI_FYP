@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Webtalk v2020.2 (64-bit)
+# SW Build 3064766 on Wed Nov 18 09:12:45 MST 2020
+# IP Build 3064653 on Wed Nov 18 14:17:31 MST 2020
+# Start of session at: Wed Aug 26 15:30:45 2026
+# Process ID: 25760
+# Current directory: E:/projects/spi-fyp
+# Command line: wbtcv.exe -mode batch -source E:/projects/spi-fyp/xsim.dir/spi_master_tb_sim/webtalk/xsim_webtalk.tcl -notrace
+# Log file: E:/projects/spi-fyp/webtalk.log
+# Journal file: E:/projects/spi-fyp\webtalk.jou
+#-----------------------------------------------------------
+source E:/projects/spi-fyp/xsim.dir/spi_master_tb_sim/webtalk/xsim_webtalk.tcl -notrace
