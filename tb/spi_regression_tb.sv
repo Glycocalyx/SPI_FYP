@@ -3,6 +3,13 @@
 module spi_regression_tb;
 
     // ============================================================
+    // Test configuration
+    // ============================================================
+
+    localparam integer DATA_WIDTH = 16;
+
+
+    // ============================================================
     // Master signals
     // ============================================================
 
@@ -12,8 +19,8 @@ module spi_regression_tb;
     logic       start;
     logic       slave_sel;
 
-    logic [7:0] master_tx_data;
-    logic [7:0] master_rx_data;
+    logic [DATA_WIDTH-1:0] master_tx_data;
+    logic [DATA_WIDTH-1:0] master_rx_data;
 
     logic       master_busy;
     logic       master_done;
@@ -29,8 +36,8 @@ module spi_regression_tb;
     // Slave 0 signals
     // ============================================================
 
-    logic [7:0] slave0_tx_data;
-    logic [7:0] slave0_rx_data;
+    logic [DATA_WIDTH-1:0] slave0_tx_data;
+    logic [DATA_WIDTH-1:0] slave0_rx_data;
 
     logic       slave0_miso;
     logic       slave0_miso_oe;
@@ -43,8 +50,8 @@ module spi_regression_tb;
     // Slave 1 signals
     // ============================================================
 
-    logic [7:0] slave1_tx_data;
-    logic [7:0] slave1_rx_data;
+    logic [DATA_WIDTH-1:0] slave1_tx_data;
+    logic [DATA_WIDTH-1:0] slave1_rx_data;
 
     logic       slave1_miso;
     logic       slave1_miso_oe;
@@ -59,10 +66,11 @@ module spi_regression_tb;
 
     logic       monitor_active;
 
-    logic [7:0] expected_mosi_byte;
-    logic [7:0] expected_miso_byte;
+    logic [DATA_WIDTH-1:0] expected_mosi_word;
+    logic [DATA_WIDTH-1:0] expected_miso_word;
 
     integer bit_index;
+
     integer sclk_rise_count;
     integer sclk_fall_count;
 
@@ -75,7 +83,8 @@ module spi_regression_tb;
     // ============================================================
 
     spi_master #(
-        .CLK_DIV(4)
+        .CLK_DIV    (4),
+        .DATA_WIDTH (DATA_WIDTH)
     ) u_master (
         .clk       (clk),
         .rst_n     (rst_n),
@@ -97,10 +106,12 @@ module spi_regression_tb;
 
 
     // ============================================================
-    // Real synthesizable Slave 0
+    // Synthesizable Slave 0
     // ============================================================
 
-    spi_slave u_slave0 (
+    spi_slave #(
+        .DATA_WIDTH (DATA_WIDTH)
+    ) u_slave0 (
         .sclk     (sclk),
         .csb_n    (csb_n[0]),
         .mosi     (mosi),
@@ -116,10 +127,12 @@ module spi_regression_tb;
 
 
     // ============================================================
-    // Real synthesizable Slave 1
+    // Synthesizable Slave 1
     // ============================================================
 
-    spi_slave u_slave1 (
+    spi_slave #(
+        .DATA_WIDTH (DATA_WIDTH)
+    ) u_slave1 (
         .sclk     (sclk),
         .csb_n    (csb_n[1]),
         .mosi     (mosi),
@@ -153,7 +166,7 @@ module spi_regression_tb;
 
 
     // ============================================================
-    // Verification Master system clock
+    // Verification system clock
     //
     // 100 MHz
     // ============================================================
@@ -174,12 +187,16 @@ module spi_regression_tb;
     // ============================================================
 
     always @(posedge slave0_rx_valid) begin
+
         saw_slave0_rx_valid = 1'b1;
+
     end
 
 
     always @(posedge slave1_rx_valid) begin
+
         saw_slave1_rx_valid = 1'b1;
+
     end
 
 
@@ -187,13 +204,14 @@ module spi_regression_tb;
     // SPI bit-level monitor
     //
     // Mode 0:
-    // rising edge = sample edge
     //
-    // This monitor independently checks:
+    // rising edge = sampling edge
+    //
+    // Check:
     //
     // 1. MOSI is MSB first
     // 2. MISO is MSB first
-    // 3. exactly 8 rising edges occur
+    // 3. correct number of rising edges
     // ============================================================
 
     always @(posedge sclk) begin
@@ -202,19 +220,27 @@ module spi_regression_tb;
 
             sclk_rise_count = sclk_rise_count + 1;
 
-            if (bit_index < 8) begin
+
+            if (bit_index < DATA_WIDTH) begin
 
                 // ------------------------------------------------
-                // Check MOSI bit order
+                // Check MOSI bit
                 // ------------------------------------------------
 
-                if (mosi !== expected_mosi_byte[7-bit_index]) begin
+                if (
+                    mosi !==
+                    expected_mosi_word[
+                        DATA_WIDTH-1-bit_index
+                    ]
+                ) begin
 
                     $display(
                         "FAIL: MOSI bit %0d = %b, expected %b",
                         bit_index,
                         mosi,
-                        expected_mosi_byte[7-bit_index]
+                        expected_mosi_word[
+                            DATA_WIDTH-1-bit_index
+                        ]
                     );
 
                     error_count = error_count + 1;
@@ -223,16 +249,23 @@ module spi_regression_tb;
 
 
                 // ------------------------------------------------
-                // Check MISO bit order
+                // Check MISO bit
                 // ------------------------------------------------
 
-                if (miso !== expected_miso_byte[7-bit_index]) begin
+                if (
+                    miso !==
+                    expected_miso_word[
+                        DATA_WIDTH-1-bit_index
+                    ]
+                ) begin
 
                     $display(
                         "FAIL: MISO bit %0d = %b, expected %b",
                         bit_index,
                         miso,
-                        expected_miso_byte[7-bit_index]
+                        expected_miso_word[
+                            DATA_WIDTH-1-bit_index
+                        ]
                     );
 
                     error_count = error_count + 1;
@@ -250,7 +283,7 @@ module spi_regression_tb;
 
 
     // ============================================================
-    // Count SCLK falling edges
+    // Count falling edges
     // ============================================================
 
     always @(negedge sclk) begin
@@ -262,24 +295,45 @@ module spi_regression_tb;
 
 
     // ============================================================
-    // Generic SPI transaction task
+    // Continuous MISO ownership check
     //
-    // sel       = selected Slave
-    // master_tx = byte sent by Master
-    // slave_tx  = byte returned by selected Slave
-    // test_id   = transaction number
+    // During a transaction, both Slaves must never drive
+    // the shared MISO bus at the same time.
+    // ============================================================
+
+    always @(*) begin
+
+        if (
+            monitor_active &&
+            slave0_miso_oe &&
+            slave1_miso_oe
+        ) begin
+
+            $display(
+                "FAIL: MISO bus contention detected"
+            );
+
+        end
+
+    end
+
+
+    // ============================================================
+    // Generic SPI transaction task
     // ============================================================
 
     task automatic run_transaction (
-        input logic       sel,
-        input logic [7:0] master_tx,
-        input logic [7:0] slave_tx,
-        input integer     test_id
+        input logic                  sel,
+        input logic [DATA_WIDTH-1:0] master_tx,
+        input logic [DATA_WIDTH-1:0] slave_tx,
+        input integer                test_id
     );
 
         begin
 
-            transaction_count = transaction_count + 1;
+            transaction_count =
+                transaction_count + 1;
+
 
             $display(
                 "=================================================="
@@ -306,31 +360,36 @@ module spi_regression_tb;
 
 
             // ----------------------------------------------------
-            // Configure this transaction
+            // Configure transaction
             // ----------------------------------------------------
 
             slave_sel      = sel;
             master_tx_data = master_tx;
 
+
             if (sel == 1'b0)
                 slave0_tx_data = slave_tx;
+
             else
                 slave1_tx_data = slave_tx;
 
 
             // ----------------------------------------------------
-            // Prepare independent bit-level monitor
+            // Prepare independent monitor
             // ----------------------------------------------------
 
-            expected_mosi_byte = master_tx;
-            expected_miso_byte = slave_tx;
+            expected_mosi_word = master_tx;
+            expected_miso_word = slave_tx;
 
             bit_index       = 0;
+
             sclk_rise_count = 0;
             sclk_fall_count = 0;
 
+
             if (sel == 1'b0)
                 saw_slave0_rx_valid = 1'b0;
+
             else
                 saw_slave1_rx_valid = 1'b0;
 
@@ -343,9 +402,12 @@ module spi_regression_tb;
             // ----------------------------------------------------
 
             @(negedge clk);
+
             start = 1'b1;
 
+
             @(negedge clk);
+
             start = 1'b0;
 
 
@@ -355,19 +417,24 @@ module spi_regression_tb;
 
             if (sel == 1'b0)
                 wait (csb_n[0] == 1'b0);
+
             else
                 wait (csb_n[1] == 1'b0);
+
 
             #1;
 
 
             // ----------------------------------------------------
-            // Check chip-select
+            // Check CSB
             // ----------------------------------------------------
 
             if (
-                ((sel == 1'b0) && (csb_n == 2'b10)) ||
-                ((sel == 1'b1) && (csb_n == 2'b01))
+                ((sel == 1'b0) &&
+                 (csb_n == 2'b10))
+                ||
+                ((sel == 1'b1) &&
+                 (csb_n == 2'b01))
             ) begin
 
                 $display(
@@ -383,13 +450,14 @@ module spi_regression_tb;
                     csb_n
                 );
 
-                error_count = error_count + 1;
+                error_count =
+                    error_count + 1;
 
             end
 
 
             // ----------------------------------------------------
-            // Check MISO output enable exclusivity
+            // Check MISO output-enable ownership
             // ----------------------------------------------------
 
             if (sel == 1'b0) begin
@@ -410,7 +478,8 @@ module spi_regression_tb;
                         "FAIL: Wrong MISO OE state"
                     );
 
-                    error_count = error_count + 1;
+                    error_count =
+                        error_count + 1;
 
                 end
 
@@ -433,7 +502,8 @@ module spi_regression_tb;
                         "FAIL: Wrong MISO OE state"
                     );
 
-                    error_count = error_count + 1;
+                    error_count =
+                        error_count + 1;
 
                 end
 
@@ -471,7 +541,8 @@ module spi_regression_tb;
                     slave_tx
                 );
 
-                error_count = error_count + 1;
+                error_count =
+                    error_count + 1;
 
             end
 
@@ -482,7 +553,9 @@ module spi_regression_tb;
 
             if (sel == 1'b0) begin
 
-                if (slave0_rx_data == master_tx) begin
+                if (
+                    slave0_rx_data == master_tx
+                ) begin
 
                     $display(
                         "PASS: Slave 0 RX = 0x%h",
@@ -498,14 +571,17 @@ module spi_regression_tb;
                         master_tx
                     );
 
-                    error_count = error_count + 1;
+                    error_count =
+                        error_count + 1;
 
                 end
 
             end
             else begin
 
-                if (slave1_rx_data == master_tx) begin
+                if (
+                    slave1_rx_data == master_tx
+                ) begin
 
                     $display(
                         "PASS: Slave 1 RX = 0x%h",
@@ -521,7 +597,8 @@ module spi_regression_tb;
                         master_tx
                     );
 
-                    error_count = error_count + 1;
+                    error_count =
+                        error_count + 1;
 
                 end
 
@@ -534,8 +611,8 @@ module spi_regression_tb;
 
             if (
                 ((sel == 1'b0) &&
-                 (saw_slave0_rx_valid == 1'b1)) ||
-
+                 (saw_slave0_rx_valid == 1'b1))
+                ||
                 ((sel == 1'b1) &&
                  (saw_slave1_rx_valid == 1'b1))
             ) begin
@@ -551,69 +628,78 @@ module spi_regression_tb;
                     "FAIL: Selected Slave did not assert rx_valid"
                 );
 
-                error_count = error_count + 1;
+                error_count =
+                    error_count + 1;
 
             end
 
 
             // ----------------------------------------------------
-            // Check exact number of SPI clock edges
-            //
-            // 8-bit SPI transaction:
-            // 8 rising edges
-            // 8 falling edges
+            // Check exact SCLK edge count
             // ----------------------------------------------------
 
-            if (sclk_rise_count == 8) begin
+            if (
+                sclk_rise_count == DATA_WIDTH
+            ) begin
 
                 $display(
-                    "PASS: Exactly 8 SCLK rising edges"
+                    "PASS: Exactly %0d SCLK rising edges",
+                    DATA_WIDTH
                 );
 
             end
             else begin
 
                 $display(
-                    "FAIL: SCLK rising edges = %0d, expected 8",
-                    sclk_rise_count
+                    "FAIL: SCLK rising edges = %0d, expected %0d",
+                    sclk_rise_count,
+                    DATA_WIDTH
                 );
 
-                error_count = error_count + 1;
+                error_count =
+                    error_count + 1;
 
             end
 
 
-            if (sclk_fall_count == 8) begin
+            if (
+                sclk_fall_count == DATA_WIDTH
+            ) begin
 
                 $display(
-                    "PASS: Exactly 8 SCLK falling edges"
+                    "PASS: Exactly %0d SCLK falling edges",
+                    DATA_WIDTH
                 );
 
             end
             else begin
 
                 $display(
-                    "FAIL: SCLK falling edges = %0d, expected 8",
-                    sclk_fall_count
+                    "FAIL: SCLK falling edges = %0d, expected %0d",
+                    sclk_fall_count,
+                    DATA_WIDTH
                 );
 
-                error_count = error_count + 1;
+                error_count =
+                    error_count + 1;
 
             end
 
 
             // ----------------------------------------------------
-            // Wait for Master to return to IDLE
+            // Wait for complete return to IDLE
             // ----------------------------------------------------
 
             wait (master_done == 1'b0);
+
             wait (csb_n == 2'b11);
+
 
             @(negedge clk);
 
 
             // ----------------------------------------------------
-            // Final bus idle checks
+            // Final idle checks
             // ----------------------------------------------------
 
             if (sclk !== 1'b0) begin
@@ -622,7 +708,8 @@ module spi_regression_tb;
                     "FAIL: SCLK did not return to Mode 0 idle"
                 );
 
-                error_count = error_count + 1;
+                error_count =
+                    error_count + 1;
 
             end
 
@@ -636,7 +723,20 @@ module spi_regression_tb;
                     "FAIL: A Slave is still driving MISO in IDLE"
                 );
 
-                error_count = error_count + 1;
+                error_count =
+                    error_count + 1;
+
+            end
+
+
+            if (csb_n !== 2'b11) begin
+
+                $display(
+                    "FAIL: CSB did not return to idle"
+                );
+
+                error_count =
+                    error_count + 1;
 
             end
 
@@ -666,20 +766,21 @@ module spi_regression_tb;
         start     = 1'b0;
         slave_sel = 1'b0;
 
-        master_tx_data = 8'h00;
+        master_tx_data = '0;
 
-        slave0_tx_data = 8'h00;
-        slave1_tx_data = 8'h00;
+        slave0_tx_data = '0;
+        slave1_tx_data = '0;
 
         saw_slave0_rx_valid = 1'b0;
         saw_slave1_rx_valid = 1'b0;
 
         monitor_active = 1'b0;
 
-        expected_mosi_byte = 8'h00;
-        expected_miso_byte = 8'h00;
+        expected_mosi_word = '0;
+        expected_miso_word = '0;
 
-        bit_index       = 0;
+        bit_index = 0;
+
         sclk_rise_count = 0;
         sclk_fall_count = 0;
 
@@ -701,14 +802,15 @@ module spi_regression_tb;
         // ========================================================
         // TEST 1
         //
-        // All-zero Master TX
-        // All-one Slave TX
+        // Extreme patterns:
+        // Master all zeros
+        // Slave all ones
         // ========================================================
 
         run_transaction(
             1'b0,
-            8'h00,
-            8'hFF,
+            16'h0000,
+            16'hFFFF,
             1
         );
 
@@ -716,16 +818,14 @@ module spi_regression_tb;
         // ========================================================
         // TEST 2
         //
-        // Same Slave immediately used again.
-        //
-        // All-one Master TX
-        // All-zero Slave TX
+        // Same Slave again.
+        // Reverse extreme pattern.
         // ========================================================
 
         run_transaction(
             1'b0,
-            8'hFF,
-            8'h00,
+            16'hFFFF,
+            16'h0000,
             2
         );
 
@@ -734,13 +834,13 @@ module spi_regression_tb;
         // TEST 3
         //
         // Switch to Slave 1.
-        // Alternating bit pattern.
+        // Alternating pattern.
         // ========================================================
 
         run_transaction(
             1'b1,
-            8'hA5,
-            8'h3C,
+            16'hA55A,
+            16'h3CC3,
             3
         );
 
@@ -749,13 +849,12 @@ module spi_regression_tb;
         // TEST 4
         //
         // Switch back to Slave 0.
-        // Opposite alternating pattern.
         // ========================================================
 
         run_transaction(
             1'b0,
-            8'h5A,
-            8'hA7,
+            16'h5AA5,
+            16'hC33C,
             4
         );
 
@@ -763,16 +862,13 @@ module spi_regression_tb;
         // ========================================================
         // TEST 5
         //
-        // Switch to Slave 1.
-        // Non-symmetric bit pattern.
-        //
-        // Useful for detecting bit-order mistakes.
+        // Non-symmetric pattern for bit-order checking.
         // ========================================================
 
         run_transaction(
             1'b1,
-            8'h96,
-            8'h69,
+            16'h96C3,
+            16'h691E,
             5
         );
 
@@ -780,15 +876,28 @@ module spi_regression_tb;
         // ========================================================
         // TEST 6
         //
-        // Same Slave 1 again.
-        // Another non-symmetric pattern.
+        // First / last bit and sparse transitions.
         // ========================================================
 
         run_transaction(
             1'b1,
-            8'h81,
-            8'h18,
+            16'h8001,
+            16'h1809,
             6
+        );
+
+
+        // ========================================================
+        // TEST 7
+        //
+        // Switch back again to verify repeated Slave switching.
+        // ========================================================
+
+        run_transaction(
+            1'b0,
+            16'h7FFE,
+            16'hE187,
+            7
         );
 
 
@@ -809,14 +918,14 @@ module spi_regression_tb;
         if (error_count == 0) begin
 
             $display(
-                "REGRESSION PASS: all SPI tests passed"
+                "16-BIT REGRESSION PASS: all SPI tests passed"
             );
 
         end
         else begin
 
             $display(
-                "REGRESSION FAIL: %0d error(s) detected",
+                "16-BIT REGRESSION FAIL: %0d error(s) detected",
                 error_count
             );
 

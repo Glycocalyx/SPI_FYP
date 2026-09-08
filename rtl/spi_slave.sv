@@ -1,52 +1,56 @@
 `timescale 1ns/1ps
 
-module spi_slave (
-    input  logic       sclk,
-    input  logic       csb_n,
-    input  logic       mosi,
+module spi_slave #(
+    parameter integer DATA_WIDTH = 16
+)(
+    input  logic                  sclk,
+    input  logic                  csb_n,
+    input  logic                  mosi,
 
-    input  logic [7:0] tx_data,
+    input  logic [DATA_WIDTH-1:0] tx_data,
 
-    output logic       miso,
-    output logic       miso_oe,
+    output logic                  miso,
+    output logic                  miso_oe,
 
-    output logic [7:0] rx_data,
-    output logic       rx_valid
+    output logic [DATA_WIDTH-1:0] rx_data,
+    output logic                  rx_valid
 );
 
-    // ------------------------------------------------------------
+    // ============================================================
+    // Local parameters
+    // ============================================================
+
+    localparam integer CNT_WIDTH =
+        (DATA_WIDTH <= 1) ? 1 : $clog2(DATA_WIDTH);
+
+
+    // ============================================================
     // Internal registers
-    // ------------------------------------------------------------
+    // ============================================================
 
-    // Receive shift register:
-    // collects MOSI bits from the external SPI Master.
-    logic [7:0] rx_shift_reg;
+    logic [DATA_WIDTH-1:0] rx_shift_reg;
 
-    // Receive bit counter:
-    // counts the 8 rising edges of SCLK.
-    logic [2:0] rx_bit_cnt;
-
-    // Transmit bit counter:
-    // determines which bit of tx_data is currently placed on MISO.
-    logic [2:0] tx_bit_cnt;
+    logic [CNT_WIDTH-1:0] rx_bit_cnt;
+    logic [CNT_WIDTH-1:0] tx_bit_cnt;
 
 
-    // ------------------------------------------------------------
-    // MISO output
+    // ============================================================
+    // MISO output logic
     //
-    // SPI Mode 0, MSB first.
+    // SPI Mode 0:
+    //   - data is sampled on rising edge
+    //   - data changes/prepares on falling edge
     //
-    // tx_bit_cnt = 0 -> tx_data[7]
-    // tx_bit_cnt = 1 -> tx_data[6]
-    // ...
-    // tx_bit_cnt = 7 -> tx_data[0]
-    // ------------------------------------------------------------
+    // The MSB is already available when CSB becomes active.
+    // ============================================================
 
     always_comb begin
 
         if (!csb_n) begin
 
-            miso    = tx_data[7 - tx_bit_cnt];
+            miso =
+                tx_data[DATA_WIDTH-1-tx_bit_cnt];
+
             miso_oe = 1'b1;
 
         end
@@ -60,47 +64,43 @@ module spi_slave (
     end
 
 
-    // ------------------------------------------------------------
+    // ============================================================
     // Receive path
     //
-    // SPI Mode 0:
+    // Mode 0:
     // MOSI is sampled on the rising edge of SCLK.
-    //
-    // CSB high means that the Slave is inactive and the
-    // current transaction state is reset.
-    // ------------------------------------------------------------
+    // ============================================================
 
     always_ff @(posedge sclk or posedge csb_n) begin
 
         if (csb_n) begin
 
-            rx_shift_reg <= 8'b0;
-            rx_bit_cnt    <= 3'd0;
+            rx_shift_reg <= '0;
+            rx_bit_cnt    <= '0;
             rx_valid      <= 1'b0;
 
         end
         else begin
 
-            // Shift the newly sampled MOSI bit into the register.
             rx_shift_reg <= {
-                rx_shift_reg[6:0],
+                rx_shift_reg[DATA_WIDTH-2:0],
                 mosi
             };
 
 
-            // The eighth rising edge completes one 8-bit word.
-            if (rx_bit_cnt == 3'd7) begin
+            // ----------------------------------------------------
+            // Complete one DATA_WIDTH-bit word
+            // ----------------------------------------------------
 
-                // Include the current MOSI bit directly because
-                // rx_shift_reg itself is updated by non-blocking
-                // assignment after this clock edge.
+            if (rx_bit_cnt == DATA_WIDTH-1) begin
+
                 rx_data <= {
-                    rx_shift_reg[6:0],
+                    rx_shift_reg[DATA_WIDTH-2:0],
                     mosi
                 };
 
                 rx_valid   <= 1'b1;
-                rx_bit_cnt <= 3'd0;
+                rx_bit_cnt <= '0;
 
             end
             else begin
@@ -115,27 +115,25 @@ module spi_slave (
     end
 
 
-    // ------------------------------------------------------------
-    // Transmit path
+    // ============================================================
+    // Transmit bit counter
     //
-    // SPI Mode 0:
-    // MISO changes on the falling edge of SCLK.
-    //
-    // Before the first rising edge, tx_bit_cnt = 0, so
-    // tx_data[7] is already available on MISO.
-    // ------------------------------------------------------------
+    // Mode 0:
+    // advance to the next output bit on falling edge.
+    // ============================================================
 
     always_ff @(negedge sclk or posedge csb_n) begin
 
         if (csb_n) begin
 
-            tx_bit_cnt <= 3'd0;
+            tx_bit_cnt <= '0;
 
         end
         else begin
 
-            if (tx_bit_cnt == 3'd7)
-                tx_bit_cnt <= 3'd0;
+            if (tx_bit_cnt == DATA_WIDTH-1)
+                tx_bit_cnt <= '0;
+
             else
                 tx_bit_cnt <= tx_bit_cnt + 1'b1;
 
