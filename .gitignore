@@ -31,3 +31,18 @@ xvlog.pb
 *~
 
 xelab.pb
+
+# Cadence Genus generated files
+genus.cmd*
+genus.log*
+fv/
+.rs_*.tstamp
+
+# Synthesis temporary outputs
+/syn/reports/
+/syn/outputs/
+
+# Xcelium generated files
+xcelium.d/
+xrun.history
+xrun.log
