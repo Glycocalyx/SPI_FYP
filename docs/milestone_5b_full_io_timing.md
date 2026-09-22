@@ -349,20 +349,132 @@ area_full_io_pad_110MHz_5pF.rpt
 
 # Result Summary
 
+## Timing Results
 
-## Timing
+| Path | Result | Slack |
+|---|---:|---:|
+| MOSI input setup | MET | +3760 ps |
+| MISO output timing | MET | +5 ps |
 
-| Path | Slack |
-|---|---|
-| MOSI input setup | TBD |
-| MISO output delay | TBD |
+The MOSI input path remains comfortably within timing at 110 MHz.
+
+The MISO output path remains the critical external-interface path and is very close to the current pre-layout timing boundary.
+
+
+## CSB Core Net
+
+The CSB input PAD is physically integrated into the synthesized design.
+
+The mapped `csb_core` net is driven by:
+
+`u_csb_pad/C`
+
+and drives the synthesized SPI transaction-control logic, including the MISO output-enable control path.
+
+The mapped CSB core-net characteristics are:
+
+- Rise capacitance: 41.6 fF
+- Fall capacitance: 41.8 fF
+- Rise slew: 240.8 ps
+- Fall slew: 240.1 ps
+
+This confirms the physical signal path:
+
+    external csb_pad
+        |
+        v
+    CSB input PAD
+        |
+        v
+    u_csb_pad/C
+        |
+        v
+    csb_core
+        |
+        v
+    SPI transaction-control logic
+
+CSB is intentionally not treated as a normal synchronous input in this milestone.
+
+Recovery/removal timing will be analyzed separately in Milestone 5C.
+
+
+## SCLK Core Net
+
+The mapped SCLK core-net load remains approximately:
+
+- Rise capacitance: 122.5 fF
+- Fall capacitance: 120.5 fF
+
+The previously characterized SCLK input PAD delays remain:
+
+- Rising-edge PAD-to-C delay: 0.6738 ns
+- Falling-edge PAD-to-C delay: 0.7487 ns
+
+
+## MOSI Input Timing
+
+The worst reported MOSI setup path has:
+
+- PAD-to-C delay: 0.554 ns
+- Setup slack: +3.760 ns
+- Result: MET
+
+The physical path is:
+
+    mosi_pad
+        |
+        v
+    u_mosi_pad/PAD
+        |
+        v
+    u_mosi_pad/C
+        |
+        v
+    SPI receive sequential logic
+
+Therefore, MOSI is not the frequency-limiting interface path at 110 MHz.
+
+
+## MISO Output Timing
+
+The worst reported MISO output path has:
+
+- Data-path delay: 3.791 ns
+- MISO PAD I-to-PAD delay: 2.502 ns
+- Slack: +5 ps
+- Result: MET
+
+The physical path is:
+
+    CORE_SCLK falling edge
+        |
+        v
+    TX sequential logic
+        |
+        v
+    combinational logic
+        |
+        v
+    MISO output PAD
+        |
+        v
+    external miso_pad
+
+The MISO output PAD remains a major contributor to the total interface delay.
+
+Therefore, the TX-to-MISO path remains the frequency-limiting path in the current pre-layout model.
 
 
 ## Area
 
-| Design | Area |
-|---|---|
-| Full IO PAD wrapper | TBD |
+| Design | Cell Count | Cell Area |
+|---|---:|---:|
+| Full IO PAD wrapper | 98 | 5660.480 |
+
+The reported Genus area does not represent the physical area of the IO PAD cells themselves.
+
+The actual IO PAD dimensions will be handled later using the physical LEF/layout views during Innovus implementation.
 
 
 ---
@@ -373,19 +485,56 @@ Completed:
 
 - [x] SCLK input PAD modeling
 - [x] MOSI input PAD modeling
+- [x] CSB input PAD integration
 - [x] MISO output PAD modeling
-- [x] CSB input PAD instantiation
-- [x] Complete IO wrapper synthesis using Genus
+- [x] Full IO wrapper synthesis
+- [x] SCLK core-net characterization
+- [x] MOSI setup timing verification
+- [x] MISO output timing verification
+- [x] CSB core-net verification
+
+Current verified configuration:
+
+- Technology: TSMC 180nm HV BCD
+- Corner: TT / 25°C / 5V
+- SPI Mode: Mode 0
+- Data width: 16 bits
+- SCLK frequency: 110 MHz
+- External MISO load: 5 pF
+
+
+---
+
+# Conclusion
+
+Milestone 5B successfully integrates all four external SPI signals through physical IO PAD cells:
+
+- SCLK
+- MOSI
+- CSB
+- MISO
+
+At 110 MHz:
+
+- MOSI setup timing passes with +3.760 ns slack.
+- MISO output timing passes with only +5 ps slack.
+- CSB is successfully connected through its physical input PAD into the synthesized transaction-control logic.
+- The TX-to-MISO path remains the dominant timing limitation.
+
+This milestone establishes the complete pre-layout SPI IO interface model.
 
 
 ---
 
 # Next Step
 
-## Milestone 5C
+## Milestone 5C: CSB Asynchronous Timing Analysis
 
-Tasks:
+The next milestone will:
 
-- Analyze CSB asynchronous behavior
-- Perform recovery/removal timing analysis
-- Prepare design for Innovus physical implementation
+- inspect the exact asynchronous use of `csb_n` inside `spi_slave.sv`
+- identify the sequential cells affected by CSB
+- determine the appropriate recovery/removal timing methodology
+- avoid incorrectly treating CSB as a normal synchronous data input
+
+After Milestone 5C, the design will be prepared for Innovus physical implementation.
