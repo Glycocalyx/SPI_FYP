@@ -654,3 +654,121 @@ Complete asynchronous STA, realistic
 external timing constraints, and
 physical timing sign-off remain
 necessary before final implementation.
+
+
+---
+
+## 14. WC Clock Parameter Correction
+
+### 14.1 Background
+
+During the final review of Milestone 5D, a discrepancy was
+identified between the documented WC SCLK PAD rising delay
+and the value used in several original WC timing scripts.
+
+The original scripts used:
+
+```tcl
+set SCLK_PAD_RISE_DELAY 0.9916
+```
+
+However, the Milestone 5D documentation recorded:
+
+```tcl
+set SCLK_PAD_RISE_DELAY 0.9816
+```
+
+### 14.2 Liberty Verification
+
+The original WC IO Liberty table was inspected again.
+
+The relevant characterization conditions were:
+
+- External SCLK rising transition: 1.0 ns
+- SCLK PAD rising capacitance: 116.6 fF
+- Delay at 0.1 pF: 0.9523 ns
+- Delay at 0.3 pF: 1.3050 ns
+
+Linear interpolation gives:
+
+```text
+0.9523 + (0.1166 - 0.1) / 0.2 * (1.3050 - 0.9523)
+
+= 0.9815741 ns
+```
+
+Therefore, the correct rounded value is:
+
+```tcl
+set SCLK_PAD_RISE_DELAY 0.9816
+```
+
+The original scripts and reports are preserved as
+historical experimental records.
+
+### 14.3 Corrected Timing Experiment
+
+A separate corrected script was created:
+
+`syn/run_wc_72_6MHz_corrected.tcl`
+
+The corrected script uses:
+
+```tcl
+set RUN_TAG "wc_fixed_72_6MHz_corrected_5pF"
+set SCLK_PERIOD 13.774105
+set SCLK_PAD_RISE_DELAY 0.9816
+set SCLK_PAD_FALL_DELAY 1.0115
+```
+
+The same fixed TT-optimized netlist, WC Liberty models,
+and external timing assumptions were retained.
+
+No resynthesis or optimization was performed.
+
+### 14.4 Corrected Results
+
+The corrected Genus run completed normally.
+
+| Parameter | Corrected Result |
+|---|---:|
+| SCLK frequency | 72.6 MHz |
+| MISO data path | 5870 ps |
+| MISO slack | +6 ps |
+| MOSI data path | 733 ps |
+| MOSI slack | +5598 ps |
+| Overall worst reported slack | +6 ps |
+
+The corrected MISO result matches the original
+72.6 MHz characterization.
+
+The reported critical MISO path starts at:
+
+`u_spi_slave_tx_bit_cnt_reg[2]/CP`
+
+and ends at:
+
+`miso_pad`
+
+The relevant TX clock originates from the
+external SCLK falling edge.
+
+Since the SCLK PAD falling delay was not changed,
+the correction did not alter the reported
+critical MISO path result.
+
+### 14.5 Conclusion
+
+The WC SCLK PAD rising-delay discrepancy has
+been identified and corrected in a separate
+verification experiment.
+
+The corrected 72.6 MHz characterization
+retains a positive MISO slack of 6 ps.
+
+The previously reported approximate WC
+frequency boundary remains consistent
+with the corrected experiment.
+
+This does not establish complete multi-corner
+timing closure or physical timing sign-off.
