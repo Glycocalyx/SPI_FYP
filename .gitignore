@@ -46,3 +46,11 @@ fv/
 xcelium.d/
 xrun.history
 xrun.log
+
+
+# Innovus generated working files
+/innovus/db/
+/innovus/checkDesign/
+/innovus/innovus.cmd*
+/innovus/innovus.log*
+/innovus/reports/*.log
