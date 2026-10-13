@@ -54,3 +54,12 @@ xrun.log
 /innovus/innovus.cmd*
 /innovus/innovus.log*
 /innovus/reports/*.log
+
+# Temporary Innovus debug reports
+innovus/reports/check_design_floorplan_*test.rpt
+innovus/run_floorplan_*test.tcl
+innovus/run_floorplan_grid_diagnostic_v2.tcl
+
+# Temporary STA sweep logs
+syn/results/*MHz_61pF.log
+syn/results/*61pF_10MHz_baseline.log
