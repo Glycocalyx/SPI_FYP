@@ -107,6 +107,41 @@ Version:
     Innovus 21.13
 
 
+## Innovus
+
+Purpose:
+
+Physical design implementation.
+
+
+Version:
+
+    Innovus 21.13
+
+
+Environment setup:
+
+Innovus executable path:
+
+    /usr/eelocal/cadence/innovus211/tools/bin/innovus
+
+
+Before running Innovus:
+
+    setenv PATH /usr/eelocal/cadence/innovus211/tools/bin:$PATH
+    rehash
+
+
+Check:
+
+    which innovus
+
+
+Expected:
+
+    /usr/eelocal/cadence/innovus211/tools/bin/innovus
+
+
 ## Xcelium
 
 Purpose:
@@ -116,6 +151,41 @@ RTL simulation.
 Version:
 
     Xcelium 23.05
+
+### Xcelium Environment
+
+Xcelium executable:
+
+    /dfs/app/cadence/xcelium2303hf/tools.lnx86/inca/bin/xrun
+
+
+Temporary environment setup (tcsh):
+
+    setenv PATH /dfs/app/cadence/xcelium2303hf/tools.lnx86/inca/bin:$PATH
+
+
+Check:
+
+    which xrun
+
+
+Expected:
+
+    /dfs/app/cadence/xcelium2303hf/tools.lnx86/inca/bin/xrun
+
+
+Post-layout simulation flow:
+
+    Innovus post-route netlist
+            |
+            |
+    spi_slave_core_postroute.v
+            |
+            |
+    Xcelium + TSMC standard cell Verilog model
+            |
+            |
+    SDF annotated simulation
 
 
 ## Virtuoso
