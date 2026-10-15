@@ -47,6 +47,9 @@ xcelium.d/
 xrun.history
 xrun.log
 
+# Post-route Xcelium/SDF generated files
+/post_sim/*.log
+/post_sim/*.sdf.X
 
 # Innovus generated working files
 /innovus/db/
