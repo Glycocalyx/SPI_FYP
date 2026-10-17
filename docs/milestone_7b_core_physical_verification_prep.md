@@ -291,3 +291,16 @@ Next steps:
 5. Perform PEX/RCC and verify the extracted implementation.
 6. Integrate the PAD/top-level implementation.
 7. Verify operation above 10 MHz with defined external loading and complete interface constraints.
+## 11. Archived Milestone 7B Evidence
+
+After the setup and hold analyses, Innovus checks were repeated in the same active design session on 2026-10-17 at 19:25:
+
+| Check | Archived report | Result |
+| --- | --- | --- |
+| Innovus DRC | `innovus/reports/m7b_sta_state_drc.rpt` | 0 violations |
+| Regular connectivity | `innovus/reports/m7b_sta_state_regular_connectivity.rpt` | No problems or warnings |
+| Special connectivity, including PG pins | `innovus/reports/m7b_sta_state_special_connectivity.rpt` | No problems or warnings |
+
+The setup and hold path reports, slack files, and summaries are archived under `innovus/reports/final_sta/`. The `innovus/mmmc_tt_375mhz_m7b.tcl` file preserves the MMMC configuration used for this 375 MHz analysis. These checks do not replace foundry DRC/LVS or resolve the default-group timing violations.
+
+The final Innovus checkpoint and two selected intermediate checkpoints were backed up separately from Git. Each `.enc` entry must be retained together with its matching `.enc.dat` directory for restoration. The backup archives contain links to the site PDK and tool installation, so restoration requires access to the corresponding environment.
