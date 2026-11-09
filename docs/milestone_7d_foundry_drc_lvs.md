@@ -523,3 +523,119 @@ Milestone 7D remains IN PROGRESS.
 No final DRC, LVS, PEX or tape-out signoff is claimed.
 
 EOF
+
+
+
+
+## 2026-11-09: METAL1 Boundary / Blockage Mapping Investigation
+
+### 1. METAL1 Boundary Mapping
+
+Confirmed the following PDK layer mapping in `virtuoso_018um_v28a.map`:
+
+- METAL1 drawing: GDS Layer 16 / Datatype 0.
+- METAL1 boundary: GDS Layer 151 / Datatype 0.
+- The mapping file explicitly categorizes this section as Blockage layers.
+
+The `boundary` purpose is therefore distinct from normal conductive METAL1 drawing geometry.
+
+### 2. LEF OBS Verification
+
+Inspected the `CKBD16` macro in `tcb018bcdgp2a_4lm.lef`.
+
+Confirmed:
+- The macro contains an `OBS` section.
+- `OBS` includes multiple `LAYER METAL1` obstruction rectangles.
+- These rectangles represent routing obstructions, rather than additional conductive METAL1 nets.
+
+### 3. GDS Boundary Preservation Check
+
+Created and ran `check_metal1_boundary.py` to compare GDS Layer 151/Datatype 0 between the original standard-cell GDS and the merged core GDS.
+
+Results:
+
+| Standard Cell | Boundary Records | Result |
+|---|---:|---|
+| CKBD16 | 4 | MATCH |
+| DFCND4 | 8 | MATCH |
+| DFCNQD4 | 4 | MATCH |
+| INVD16 | 4 | MATCH |
+| INVD4 | 4 | MATCH |
+| ND2D4 | 3 | MATCH |
+| NR2D4 | 3 | MATCH |
+| **Total** | **30** | **MATCH** |
+
+The comparison checks element types and XY coordinate records.
+
+Conclusion: All seven examined standard cells preserve their Layer 151/0 boundary records in the merged GDS.
+
+This confirms geometry preservation for the examined cells, but does not independently establish complete layer correctness or DRC correctness.
+
+### 4. Virtuoso Stream-In Findings
+
+Used the following layer map:
+
+`$PDKROOT/SC/tcb018bcdgp2a_110c/TSMCHOME/digital/Back_End/lef/tcb018bcdgp2a_110a/techfiles/Virtuoso/virtuoso_018um_v28a.map`
+
+The Stream-In log reports:
+- 0 errors.
+- 2 warnings.
+- XSTRM-75: Target library is attached to a technology library, so the technology file is read-only. Undefined layer-purpose pairs will be dropped.
+- XSTRM-163: No `viaMap` option was supplied.
+
+Important: Zero Stream-In errors does not guarantee that every GDS layer-purpose pair was successfully imported.
+
+### 5. Calibre Layer-Mapping Warnings
+
+The Calibre output contains warnings about unmapped GDS layers/datatype pairs, including:
+
+- 3/1, 4/1
+- 13/1, 13/4
+- 16/1, 16/2
+- 18/1, 18/2
+- 28/1, 28/2
+- 31/1, 31/2
+- 56/1, 56/2
+
+A separate inspection of the Cadence Stream-In map confirmed the following entries:
+
+| Layer Purpose | GDS Layer/Datatype |
+|---|---|
+| DIFF dummy | 3/1 |
+| POLY1 dummy | 13/1 |
+| METAL1 dummy | 16/1 |
+| METAL1 slot | 16/2 |
+| METAL2 dummy | 18/1 |
+| METAL2 slot | 18/2 |
+| METAL3 dummy | 28/1 |
+| METAL3 slot | 28/2 |
+| METAL4 dummy | 31/1 |
+| METAL4 slot | 31/2 |
+
+Important distinction: The Cadence Stream-In map is not necessarily the layer map used by Calibre. These findings do not yet establish the cause of Calibre's unmapped-layer warnings.
+
+Other Calibre messages requiring further investigation:
+
+- DISCONNECT operations without `DRC INCREMENTAL CONNECT YES`.
+- PROJECTING constraints automatically changed to PARALLEL ONLY.
+- Missing connections when stamping LV_SD by PSD_mf and NSD_mf.
+
+These messages have not yet been classified as harmless warnings or actual verification problems.
+
+### 6. Current Status and Next Steps
+
+**Confirmed:**
+- METAL1 boundary is mapped to GDS 151/0 in the inspected PDK map.
+- Standard-cell LEF contains METAL1 OBS obstruction geometry.
+- All seven examined standard cells preserve their 151/0 geometry in the merged GDS.
+
+**Pending:**
+1. Identify the actual layer mapping configuration used by the Calibre DRC run.
+2. Investigate all unmapped layer/datatype warnings.
+3. Determine whether the remaining Calibre warnings affect DRC results.
+4. Analyze and resolve actual DRC violations.
+5. Freeze the final GDS only after DRC is resolved.
+6. Generate the corresponding schematic and proceed with LVS afterward.
+
+**Current priority: Calibre DRC correctness. LVS and schematic generation are deferred until the physical layout is finalized.**
+
