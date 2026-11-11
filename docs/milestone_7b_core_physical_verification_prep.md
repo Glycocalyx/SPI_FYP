@@ -304,3 +304,59 @@ After the setup and hold analyses, Innovus checks were repeated in the same acti
 The setup and hold path reports, slack files, and summaries are archived under `innovus/reports/final_sta/`. The `innovus/mmmc_tt_375mhz_m7b.tcl` file preserves the MMMC configuration used for this 375 MHz analysis. These checks do not replace foundry DRC/LVS or resolve the default-group timing violations.
 
 The final Innovus checkpoint and two selected intermediate checkpoints were backed up separately from Git. Each `.enc` entry must be retained together with its matching `.enc.dat` directory for restoration. The backup archives contain links to the site PDK and tool installation, so restoration requires access to the corresponding environment.
+
+
+
+## 12. M7B Restore Verification — 2026-11-11
+
+### Checkpoint Identity
+
+Compared:
+- innovus/db/core_final_rc_propagated_clock.enc
+- innovus/db/m7b_restore_check/core_final_rc_propagated_clock.enc
+
+Results:
+- ENC cmp: identical (exit status 0)
+- ENC.DAT diff: no differences (exit status 0)
+
+The restored checkpoint is identical to the original M7B checkpoint.
+
+### Restored Design Fingerprint
+
+- Top: spi_slave
+- Instances: 256
+- Unique standard-cell masters: 42
+- Filler instances: 151
+- Core box: (0, 0, 100, 100)
+- Floorplan box: (0, -2, 100, 100)
+- DBU: 2000
+- SCLK period: 2.667 ns
+- SCLK propagated: Yes
+
+### Re-verification Results
+
+Date: 2026-11-11
+
+| Check | Result |
+|---|---|
+| Innovus DRC | 0 violations |
+| Regular connectivity | 0 violations, 0 warnings |
+| Special connectivity / PG | 0 violations, 0 warnings |
+
+Reports:
+- innovus/reports/m7b_restore_check_20261111/drc.rpt
+- innovus/reports/m7b_restore_check_20261111/regular.rpt
+- innovus/reports/m7b_restore_check_20261111/special.rpt
+
+### Limitations
+
+These results confirm the restored Innovus database state only.
+
+They do not establish:
+- Foundry Calibre DRC cleanliness
+- LVS equivalence
+- P-substrate grounding
+- Foundry PEX/RCC correctness
+
+The next priority remains investigating NBL.R.1 and proving substrate connectivity before changing the SubToGround deck option.
+
