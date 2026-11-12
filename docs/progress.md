@@ -1,5 +1,7 @@
 # SPI FYP Development Progress
 
+> Historical snapshot of the initial 8-bit Master design. See the [active Slave ASIC specification](specification.md) and [current project state](PROJECT_STATE.md).
+
 ## Project Goal
 
 Design a synthesizable SPI Master Controller for a digital ASIC flow using:

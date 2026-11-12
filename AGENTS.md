@@ -1,55 +1,12 @@
-# SPI FYP Development Instructions
+# SPI FYP documentation maintenance
 
-## Project
-This is a digital ASIC SPI interface design project targeting TSMC 180 nm BCD.
+Repository: `Glycocalyx/SPI_FYP`. The active specification is [docs/specification.md](docs/specification.md), and the latest recorded status is [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md).
 
-Target tool flow:
-- SystemVerilog RTL
-- Cadence Xcelium 23.05 for RTL simulation
-- Cadence Genus 21.1 for logic synthesis
-- Cadence Innovus 21.1 for physical design
-- Virtuoso may be used later for top-level integration if required
+Codex maintains documentation, permanent record IDs, and approved Git changes. ChatGPT supplies engineering conclusions and artifact upload decisions. The user performs server work and provides actual results.
 
-## System Architecture
-- One SPI Master
-- Two SPI Slaves
-- Conventional multi-slave topology
-- SCLK shared by both slaves
-- MOSI shared by both slaves
-- MISO shared by both slaves
-- Independent active-low CSB1 and CSB2
-- Only one slave may be selected at a time
-- The two slaves should reuse the same slave module when possible
+- Work from the supplied migration or CODEX SYNC PACKAGE. Read the relevant documents and preserve historical records, failure results, evidence grades, and unresolved conflicts.
+- Do not access the EDA server, run engineering tests, change engineering files, reinterpret results, or transfer server artifacts.
+- For routine synchronization, use [fyp-record-sync](.agents/skills/fyp-record-sync/SKILL.md).
+- Stage only the intended documentation changes. Stop on unexpected changes, conflicts, or divergence. Never force-push.
 
-## Tentative SPI Specification
-These parameters are tentative and may be changed later:
-- SPI Mode 0
-- CPOL = 0
-- CPHA = 0
-- 8-bit data width
-- MSB first
-- Full-duplex communication
-- One 8-bit word per transaction
-
-## RTL Design Rules
-- Use synthesizable SystemVerilog
-- Target ASIC implementation, not FPGA implementation
-- Do not instantiate Xilinx/Intel FPGA-specific primitives
-- Do not use `#` delays in synthesizable RTL
-- Keep RTL and testbench code separate
-- Prefer simple, readable RTL over unnecessary complexity
-- Master, slave, and top-level logic should remain modular
-- Use self-checking SystemVerilog testbenches
-- Do not add FIFO, CRC, DMA, APB/AHB, or other extra features unless explicitly requested
-- Do not change the agreed SPI specification without explicit confirmation
-
-## Development Approach
-Develop incrementally:
-1. Define interfaces and timing behavior
-2. Implement and verify a single SPI slave
-3. Implement and verify the SPI master
-4. Integrate one master with one slave
-5. Extend to one master with two slaves
-6. Perform system-level RTL verification
-7. Prepare the design for Genus synthesis
-8. Perform Innovus physical implementation
+The [initial 8-bit Master development instructions](https://github.com/Glycocalyx/SPI_FYP/blob/7f1ad9f34c1bb04bc825cc6cca4d34cefe098b04/AGENTS.md) remain in Git history. The original specification and progress snapshot are retained in the repository.

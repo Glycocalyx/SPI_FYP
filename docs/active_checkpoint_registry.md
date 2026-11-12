@@ -1,6 +1,7 @@
 # SPI Slave ASIC — Active Checkpoint Registry
 
-**Last Updated:** 2026-11-11  
+**Last Updated:** 2026-11-12
+
 **Project:** SPI Slave ASIC  
 **Technology:** TSMC 180nm HV BCD Gen2  
 **Tool:** Cadence Innovus 21.13
@@ -141,6 +142,11 @@ Properties:
 - Merged with the TSMC standard-cell GDS.
 - Source checkpoint: M7B restore checkpoint.
 
+- Size reported on 2026-11-12: 471K.
+- SHA256 confirmed from the design GDS on 2026-11-12: `7a0f7c4471402b737095730d6edf01f90ba089be80688fe9e09fa76353853f72`.
+
+On 2026-11-12, user terminal output showed a CKBD16 bottom M1 VSS label (40/0 at (280,0)) and 123 P+ contact candidate records. All 123 were contained by DIFF, PIMP and M1, with zero NWELL containment. Some coordinates repeat. Along with the 2026-11-11 Innovus VSS PG connection, this supports CKBD16 cell-level tap connectivity. Whole-design P-substrate continuity remains unverified and SubToGround remains disabled.
+
 ### Calibre DRC
 
 Working directory:
@@ -182,7 +188,7 @@ For future checkpoint updates:
 
 These statuses must not be treated as interchangeable.
 
-## 6. Current Status — 2026-11-11
+## 6. Current Status — 2026-11-12
 
 | Item | Status |
 |---|---|
@@ -194,9 +200,9 @@ These statuses must not be treated as interchangeable.
 | BND provenance | Identified |
 | Final GDS freeze | Pending |
 | Schematic generation | Deferred |
-| LVS | Pending |
-| PEX | Pending |
-| Substrate-to-ground electrical proof | Pending |
+| LVS / ERC | Not executed |
+| PEX | Not executed |
+| Substrate-to-ground electrical proof | CKBD16 cell-level evidence; whole-design proof pending |
 
 **Current working decision:**
 
