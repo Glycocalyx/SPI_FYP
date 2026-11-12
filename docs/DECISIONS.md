@@ -106,3 +106,27 @@ WC fixed-netlist pre-layout 10 MHz slack +39.012 ns；迁移包记录当前没�
 - 当前衬底接地任务停止继续调查 RC packages。现有 LVS/ERC deck 是 full-GDS substrate-to-VSS 连通性验证的候选路线。
 - 沿用已完成的 [CKBD16 label 检查](TEST_LEDGER.md#ver-0058) 和 [whole-core contact scan](TEST_LEDGER.md#ver-0061)，两项均无需重跑。
 - `SubToGround` 维持关闭。开启前须验证衬底接地，仅消除 `NBL.R.1` 违规不足以作为开启依据。
+
+### DEC-0018
+
+**2026-11-12 · 后续 core DRC 采用 SubToGround ON**
+
+后续 core DRC 使用 `SubToGround ON`，保留原 OFF baseline。该决定更新 [DEC-0011](#dec-0011) 和 [DEC-0017](#dec-0017) 的早期状态，依据为 foundry switch 语义、CKBD16 的 123 条 P+ contact 候选、底部 VSS TEXT 与 Innovus VSS PG、同一 GDS 的 full-core ERC `floating.psub_float = 0`，以及 ON 对照中其余六项计数保持不变。适用范围为后续 core DRC 配置，最终 physical sign-off 待完成。[ERC](TEST_LEDGER.md#ver-0064) · [A/B](TEST_LEDGER.md#ver-0065)
+
+### DEC-0019
+
+**2026-11-12 · 保留原 NBL.R.1 几何结果**
+
+原 NBL.R.1 结果对应 OFF deck 的衬底未接地假设。仅依据该 baseline 结果，无需为消除该项修改布局。ON 配置排除该检查，原报告继续保留。
+
+### DEC-0020
+
+**2026-11-12 · 保留六项剩余 DRC marker**
+
+M2.R.1、M3.R.1、M4.R.1、M5.R.1、UTM30K.R.1、DRM.R.1 各 1 条，均待审查。当前没有获批的 waiver 或物理修复。
+
+### DEC-0021
+
+**2026-11-12 · PEX RC 配置待批准**
+
+Mentor RC archive 为候选。最终 `include ./rules` 配置待验证，OA rules 未被选作替代，PEX 尚未运行。

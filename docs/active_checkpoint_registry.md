@@ -145,7 +145,7 @@ Properties:
 - Size reported on 2026-11-12: 471K.
 - SHA256 confirmed from the design GDS on 2026-11-12: `7a0f7c4471402b737095730d6edf01f90ba089be80688fe9e09fa76353853f72`.
 
-On 2026-11-12, user terminal output showed a CKBD16 bottom M1 VSS label (40/0 at (280,0)) and 123 P+ contact candidate records. All 123 were contained by DIFF, PIMP and M1, with zero NWELL containment. Some coordinates repeat. Along with the 2026-11-11 Innovus VSS PG connection, this supports CKBD16 cell-level tap connectivity. Whole-design P-substrate continuity remains unverified and SubToGround remains disabled.
+On 2026-11-12, user terminal output showed a CKBD16 bottom M1 VSS label (40/0 at (280,0)) and 123 P+ contact candidate records. All 123 were contained by DIFF, PIMP and M1, with zero NWELL containment. Some coordinates repeat. Along with the 2026-11-11 Innovus VSS PG connection, this supports CKBD16 cell-level tap connectivity. At this stage, whole-design P-substrate continuity remained unverified and SubToGround was disabled. The subsequent full-core ERC and configuration decision are recorded below.
 
 ### Calibre DRC
 
@@ -200,15 +200,19 @@ These statuses must not be treated as interchangeable.
 | BND provenance | Identified |
 | Final GDS freeze | Pending |
 | Schematic generation | Deferred |
-| LVS / ERC | Not executed |
+| Full-core ERC | Executed on the current GDS; 23 checks, `0 (0)` results |
+| LVS | Not executed; source CDL pending |
 | PEX | Not executed |
-| Substrate-to-ground electrical proof | CKBD16 cell-level evidence; whole-design proof pending |
+| P-substrate ERC | `floating.psub_float = 0 (0)` under the configured check |
+| SubToGround | ON for subsequent core DRC; original OFF baseline preserved |
 
 **Current working decision:**
 
 Use `m7b_restore_check/core_final_rc_propagated_clock.enc.dat` as the reference baseline for the ongoing DRC investigation.
 
 Do not declare it the absolute newest server checkpoint until the other existing candidates have been compared.
+
+See the [full-core ERC result](TEST_LEDGER.md#ver-0064), [DRC A/B comparison](TEST_LEDGER.md#ver-0065) and [current SubToGround decision](DECISIONS.md#dec-0018).
 
 ## 7. Documentation Policy
 

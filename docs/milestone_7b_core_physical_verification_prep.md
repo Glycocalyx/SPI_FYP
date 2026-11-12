@@ -360,3 +360,8 @@ They do not establish:
 
 The next priority remains investigating NBL.R.1 and proving substrate connectivity before changing the SubToGround deck option.
 
+## 13. M7B Core Follow-up — 2026-11-12
+
+The full-core Calibre ERC used the same `spi_slave` GDS and primary cell as the original foundry DRC baseline. The configured run executed 23 checks and reported `0 (0)` results, including `floating.psub_float = 0 (0)`. Core LVS remains pending. [ERC record](TEST_LEDGER.md#ver-0064)
+
+The supplied decision adopts `SubToGround ON` for subsequent core DRC and preserves the original OFF baseline. The independent ON comparison left six DRC markers for review. The conditional `NBL.R.1` and `NWR.R.8` checks were excluded in the ON configuration. [A/B comparison](TEST_LEDGER.md#ver-0065) · [Decision](DECISIONS.md#dec-0018) · [M7D follow-up](milestone_7d_foundry_drc_lvs.md#2026-11-12--full-core-erc-and-subtoground-ab)

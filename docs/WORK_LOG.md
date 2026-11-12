@@ -252,3 +252,43 @@ Innovus process 从 90 nm 修正为 180 nm；`VIEW_TT` / `CONSTRAINT_SPI` / `DEL
 Mentor 包 `RC_xCalibre_cv018bcd_1p6m_4x1u_mim5_30kutm_typical.tar.gz` 内的规则与 Cadence OA 规则不同。该包包含 rules、QAreport 和 technology metadata。QAreport 标注 `xCalibre v2007.4_14.15`。
 
 来源为本次同步资料，原始执行日期未提供。相关记录见 [LVS_RC deck 检查](TEST_LEDGER.md#ver-0060) 和 [后续验证决策](DECISIONS.md#dec-0017)。
+
+## 2026-11-12 · Calibre ERC 与 SubToGround DRC A/B
+
+以下条目来自 2026-11-12 CODEX SYNC PACKAGE。复用已有 CKBD16 检查和 whole-core scan 的验证 ID。
+
+### ACT-0031
+
+**Calibre 环境设置 · USER_REPORTED**
+
+初始 PATH 找不到 `calibre`。执行 `source /usr/eelocal/cadence/ic618hf/.cshrc` 和 `rehash` 后确认环境与版本。[VER-0062](TEST_LEDGER.md#ver-0062)
+
+### ACT-0032
+
+**LVS/PEX deck 与 RC rule 调查补充 · USER_REPORTED**
+
+检查 `$PDKROOT/LVS_Command_File/Mentor_Graphics/t018cvsp018c1_1_7p2a/MAIN_DECK/CALIBRE_FLOW/30k/LVS_RC_Calibre_018um_GenII_1P6M_v1.7p2a`。第 21469 行的 `include ./rules` 用于 PEX/RC extraction 配置；`PEX ALIAS` 和 `PEX RESISTANCE PARAMETERS` 分别配置层别名和提取属性。对比 Mentor、Cadence OA 原版与 OA 20260222 版规则。Mentor 包进入候选名单，PEX 配置仍待批准。[既有调查](#act-0030) · [VER-0063](TEST_LEDGER.md#ver-0063)
+
+### ACT-0033
+
+**CKBD16 substrate tap 证据汇总 · USER_REPORTED**
+
+既有 Innovus 检查记录 `CTS_ccl_a_buf_00001`（CKBD16）的 VSS PG 接 VSS、VDD PG 接 VDD。GDS layer 40/type 0 的底部 M1 label 为 VSS，坐标 (280,0)。123 条底部 contact 满足检查的 P+ 几何条件。同步包综合这些证据，支持 CKBD16 的 substrate tap 接 VSS 的解释。[PG](TEST_LEDGER.md#ver-0051) · [TEXT](TEST_LEDGER.md#ver-0058) · [Geometry](TEST_LEDGER.md#ver-0059)
+
+### ACT-0034
+
+**Whole-core P+ scan 证据补充 · USER_REPORTED**
+
+`$BASE/scan_core_psub_taps.py` 扫描 `$CORE_GDS`，top 为 `spi_slave`。既有扫描报告 4036 条候选均匹配 VSS 标记 M1。终端记录夹有 shell 提示符和命令错误，证据限制见 [VER-0061](TEST_LEDGER.md#ver-0061)。
+
+### ACT-0035
+
+**Full-core Calibre ERC · USER_REPORTED**
+
+在 `erc_psub_20261112` 使用 `lvs_erc_psub.svrf` 检查 `$CORE_GDS`。deck 和生成的 summary 均确认 GDSII 格式、输入路径和 primary `spi_slave`，与原 DRC baseline 一致。[VER-0064](TEST_LEDGER.md#ver-0064)
+
+### ACT-0036
+
+**SubToGround DRC A/B · USER_REPORTED**
+
+原本地 deck 为 `$BASE/calibre_spi_slave_core.drc`。保留 `drc_run_core_20261108` 的 OFF baseline（`//#DEFINE SubToGround`）。在独立目录 `drc_subtoground_test_20261112` 比较 ON 配置。[原 baseline](TEST_LEDGER.md#ver-0043) · [ON 对照](TEST_LEDGER.md#ver-0065)

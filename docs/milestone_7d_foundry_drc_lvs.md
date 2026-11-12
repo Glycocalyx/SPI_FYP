@@ -460,12 +460,13 @@ Do not enable SubToGround solely to reduce NBL.R.1 results.
 | Dummy/slot layer mapping | IN PROGRESS |
 | 4/1, 13/4, 56/1 identification | PENDING |
 | Calibre internal layer mapping | PENDING |
-| P-substrate grounding confirmation | CKBD16 cell-level evidence; whole-design proof pending |
+| Full-core P-substrate ERC | `floating.psub_float = 0 (0)` under the configured check |
 | NBL.R.1 result investigation | PENDING |
 | M2/M3/M4/M5/UTM30K/DRM result investigation | PENDING |
 | Final core DRC | PENDING |
 | Reference netlist preparation | PENDING |
-| LVS / ERC | NOT STARTED |
+| Full-core ERC | Executed; 23 checks, `0 (0)` results |
+| LVS | NOT STARTED |
 | PEX/RCC | NOT STARTED |
 | Final PAD-integrated die verification | NOT STARTED |
 
@@ -741,8 +742,16 @@ Together, these records support CKBD16 cell-level VSS tap connectivity. Whole-de
 
 See [verification ledger](TEST_LEDGER.md#ver-0051) and [SubToGround decision](DECISIONS.md#dec-0011).
 
-## Full-GDS substrate connectivity follow-up
+## Full-GDS substrate connectivity follow-up — pre-ERC snapshot
 
 The existing whole-core scan reported 4036 P+ contact candidates, all matching VSS-labeled M1. This adds geometric and label evidence to the completed CKBD16 VSS label inspection. Full-GDS electrical continuity to VSS remains pending. [Scan record](TEST_LEDGER.md#ver-0061)
 
 The existing LVS/ERC deck is the candidate route for the pending connectivity check. The inspection established deck configuration only. ERC execution and results remain undocumented, and `SubToGround` stays disabled. [Deck inspection](TEST_LEDGER.md#ver-0060) · [Decision](DECISIONS.md#dec-0017)
+
+## 2026-11-12 — Full-core ERC and SubToGround A/B
+
+The same core GDS and primary cell as the preserved OFF baseline were used for full-core ERC. The configured run executed 23 checks and reported `0 (0)` results, including `floating.psub_float = 0 (0)`. The whole-core geometric scan figures remain recorded with a contaminated transcript. [ERC record](TEST_LEDGER.md#ver-0064) · [Scan record](TEST_LEDGER.md#ver-0061)
+
+Subsequent core DRC uses `SubToGround ON`. The independent ON run executed 3610 checks and generated six DRC results, one each for M2.R.1, M3.R.1, M4.R.1, M5.R.1, UTM30K.R.1 and DRM.R.1. Those counts match the OFF baseline. The switch excludes `NBL.R.1` and `NWR.R.8` through their `#IFNDEF SubToGround` blocks. The original OFF result `NBL.R.1 = 219 (1279)` remains preserved. [A/B comparison](TEST_LEDGER.md#ver-0065) · [Decision](DECISIONS.md#dec-0018)
+
+Marker review and final foundry sign-off are pending. The prior project-tree search found no `.cdl`, `.sp` or `.spi` files. Prepare the correct core source CDL and run LVS with the appropriate TSMC deck. Resolve the PEX `include ./rules` configuration with the correct RC technology package, then run PEX after the LVS setup and RC configuration have been verified.

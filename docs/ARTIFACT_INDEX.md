@@ -32,3 +32,16 @@
 | `$BASE/inspect_ckbd16_substrate.py`、`verify_ckbd16_p_substrate_tie.py`、`read_ckbd16_text.py` | CKBD16 geometry、P+ contact containment、GDS TEXT 提取 |
 
 迁移包把 behavioral model 列在 `rtl/`，基准树中实际位于 `tb/`。`innovus/run_core_import.tcl` 在迁移包中有引用，基准树未收录，当前位置为 UNKNOWN。上传决定见 [UPLOAD_LOG](UPLOAD_LOG.md)。
+
+## 2026-11-12 ERC、DRC A/B 与 RC 候选
+
+以下为服务器记录，目录以同步包提供的名称列出。
+
+| 文件或目录 | 记录用途 |
+|---|---|
+| `$BASE/scan_core_psub_taps.py` | Whole-core P+ contact scan，输入 `$CORE_GDS` |
+| `erc_psub_20261112/lvs_erc_psub.svrf` | ERC 工作 deck |
+| `erc_psub_20261112/calibre_erc.db`、`calibre_erc.sum` | ERC ASCII 数据库与 summary，3.8K 和 59K |
+| `drc_run_core_20261108/spi_slave.drc.summary` | 保留的 SubToGround OFF baseline |
+| `drc_subtoground_test_20261112/spi_slave_subtoground.drc.summary` | 独立的 SubToGround ON 对照 summary |
+| `RC_xCalibre_cv018bcd_1p6m_4x1u_mim5_30kutm_typical.tar.gz` | PEX RC 候选包，含 `COPYRIGHT`、`QAreport`、`rules`、`cv018bcd_1p6m_4x1u_mim5_30kutm_typical.res` 和 `cv018bcd_1p6m_4x1u_mim5_30kutm_typical.tm` |

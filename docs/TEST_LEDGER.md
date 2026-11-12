@@ -376,4 +376,47 @@ ImportError pathlib，改用 python3。
 
 **既有 whole-core contact scan · USER_REPORTED**
 
-既有扫描报告 4036 条 P+ contact 候选，4036 条均匹配带 VSS label 的 M1。证据范围为几何与标签匹配。全 GDS 电气连通性仍待验证。本次同步记录既有结果，原始运行日期未提供。
+既有扫描报告 4036 条 P+ contact 候选，4036 条均匹配带 VSS label 的 M1。证据范围为几何与标签匹配。全 GDS 电气连通性仍待验证。本条沿用既有结果。2026-11-12 同步包补充的结构计数为 52 defined cells、992 direct top SREFs、0 direct top AREFs、992 expanded SREF instances、51 referenced masters、0 expanded AREF structures。捕获的终端 transcript 混有粘贴的 shell 提示符和 `Command not found`、`Too many arguments` 等错误，故保留报告数字并标记 transcript 受污染。该输出的独立审核仍未建立。
+
+### VER-0062
+
+**2026-11-12 · Calibre 环境核对 · USER_REPORTED** · [ACT-0031](WORK_LOG.md#act-0031)
+
+`CALIBRE_HOME=/usr/eelocal/mentor/cal_2022.1_36/aoi_cal_2022.1_36.16`，可执行文件为 `$CALIBRE_HOME/bin/calibre`。版本命令出现 process-limit 警告，仍执行完成并返回 `Calibre v2022.1_36.16`。
+
+### VER-0063
+
+**2026-11-12 · RC rules SHA256 对比 · USER_REPORTED** · [ACT-0032](WORK_LOG.md#act-0032)
+
+| 规则 | SHA256 |
+|---|---|
+| Cadence OA 原版 | `fdcda784f6bf0ce518d2e8559daf79259d5404c7f6100f0f22b99d8713a86520` |
+| Cadence OA 20260222 | `fdcda784f6bf0ce518d2e8559daf79259d5404c7f6100f0f22b99d8713a86520` |
+| Mentor RC package `rules` | `df441ddbb8ef7e40c56f1a81a74c3937dfae87184ffa3c550d6bf58316c6d160` |
+
+两个 OA 文件相同，Mentor 规则不同。同步包记录 README 和 QAreport 标注历史 xCalibre/xRC QA 版本 `v2007.4_14.15`。
+
+### VER-0064
+
+**2026-11-12 · Full-core ERC · USER_REPORTED** · [ACT-0035](WORK_LOG.md#act-0035)
+
+`LAYOUT SYSTEM GDSII`、`LAYOUT PRIMARY "spi_slave"`、`LAYOUT PATH "$CORE_GDS"`（实际绝对路径见 [文件索引](ARTIFACT_INDEX.md)）在 deck 和生成的 summary 中均核对一致。deck 启用 `FLOATING_WELL_CHECK`，`GROUND_NAME` 含 VSS、DVSS、AVSS、GND 等。配置的 `floating.psub_float` 检查包含缺少 ground path（`PATHCHK !GROUND psub_float PORTS ALSO`）和直连电源（`NET psub_float POWER_NAME`）。
+
+输出为 `calibre_erc.db`（ASCII，3.8K）和 `calibre_erc.sum`（59K）。`floating.psub_float` 结果为 `0 (0)`，ERC 执行 23 项，生成 `0 (0)` 条结果。同步包的解释限于该输入与配置下未报告浮空 P-substrate 违规。Core LVS 待运行。
+
+### VER-0065
+
+**2026-11-12 · SubToGround ON DRC 对照 · USER_REPORTED** · [ACT-0036](WORK_LOG.md#act-0036)
+
+OFF baseline 的 `spi_slave.drc.summary` 记录 `NBL.R.1 = 219 (1279)`。ON 的 `spi_slave_subtoground.drc.summary` 未出现 `NBL.R.1` 或 `NWR.R.8` 条目。两项检查均在 `#IFNDEF SubToGround` 块内，ON 配置排除了这两项，原几何结果仍保留在 OFF baseline。
+
+| 规则 | OFF | ON |
+|---|---:|---:|
+| M2.R.1 | 1 | 1 |
+| M3.R.1 | 1 | 1 |
+| M4.R.1 | 1 | 1 |
+| M5.R.1 | 1 | 1 |
+| UTM30K.R.1 | 1 | 1 |
+| DRM.R.1 | 1 | 1 |
+
+ON 共执行 3610 项 DRC checks，生成 6 条 DRC 结果和 0 条 DFM RDB 结果。

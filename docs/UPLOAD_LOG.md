@@ -29,3 +29,4 @@
 | UP-0021 | ALREADY_IN_REPOSITORY | 原服务器源路径未提供 | docs/evidence/m7c/source_manifest.txt | 7C manifest | UPLOADED | 迁移包 I4；基准提交文件树 | [ACT-0023](WORK_LOG.md#act-0023) / [VER-0039](TEST_LEDGER.md#ver-0039)、[VER-0040](TEST_LEDGER.md#ver-0040) |
 | UP-0022 | ALREADY_IN_REPOSITORY | 原服务器源路径未提供 | docs/milestone_*.md | 里程碑文档 | UPLOADED | 迁移包 I4；基准提交文件树 | [ACT-0024](WORK_LOG.md#act-0024) / [VER-0043](TEST_LEDGER.md#ver-0043) |
 | UP-0023 | ALREADY_IN_REPOSITORY | 原服务器源路径未提供 | docs/active_checkpoint_registry.md | 活动 checkpoint 记录 | UPLOADED | 迁移包 I4；基准提交文件树 | [ACT-0026](WORK_LOG.md#act-0026) / [VER-0046](TEST_LEDGER.md#ver-0046) |
+| UP-0024 | NOT_APPROVED_THIS_BATCH | `$CORE_GDS`、`erc_psub_20261112/calibre_erc.db`、完整 DRC results database、RC archives、未审查的服务器产物 | — | 2026-11-12 同步包仅批准文档记录 | NOT_UPLOADED | — | [ACT-0035](WORK_LOG.md#act-0035)、[ACT-0036](WORK_LOG.md#act-0036) / [VER-0064](TEST_LEDGER.md#ver-0064)、[VER-0065](TEST_LEDGER.md#ver-0065) |
