@@ -21,3 +21,9 @@
 未解决的 DRC 项包括 unmapped datatype、DISCONNECT 与 LV_SD stamping 警告，以及 M2/M3/M4/M5/UTM30K/DRM 各一条结果。保留 7B asynchronous removal 违规。
 
 [活动 checkpoint](active_checkpoint_registry.md) · [M7D 证据](milestone_7d_foundry_drc_lvs.md) · [SubToGround 决策](DECISIONS.md#dec-0011)
+
+## 衬底连通性更新
+
+CKBD16 VSS label 检查已完成。既有 whole-core scan 报告 4036 条 P+ contact 候选，全部匹配带 VSS label 的 M1。当前证据范围为几何和标签匹配。[CKBD16 label](TEST_LEDGER.md#ver-0058) · [Whole-core scan](TEST_LEDGER.md#ver-0061)
+
+**待验证事项**为 full-GDS substrate-to-VSS 电气连通性。现有 LVS/ERC deck 是候选路线。当前仅有 deck 配置检查记录，ERC 执行和结果仍无证据，`SubToGround` 继续关闭。[Deck 检查](TEST_LEDGER.md#ver-0060) · [工程决策](DECISIONS.md#dec-0017)

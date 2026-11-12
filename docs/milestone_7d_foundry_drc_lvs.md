@@ -740,3 +740,9 @@ The actual Calibre treatment of 151/0 remains unverified.
 Together, these records support CKBD16 cell-level VSS tap connectivity. Whole-design substrate continuity, other standard-cell taps and isolated wells remain unverified. SubToGround remains disabled. The initial Calibre baseline remains `NBL.R.1 = 219 (1279)` and the parenthetical count remains unexplained. Final DRC is pending and LVS/ERC/PEX have yet to run.
 
 See [verification ledger](TEST_LEDGER.md#ver-0051) and [SubToGround decision](DECISIONS.md#dec-0011).
+
+## Full-GDS substrate connectivity follow-up
+
+The existing whole-core scan reported 4036 P+ contact candidates, all matching VSS-labeled M1. This adds geometric and label evidence to the completed CKBD16 VSS label inspection. Full-GDS electrical continuity to VSS remains pending. [Scan record](TEST_LEDGER.md#ver-0061)
+
+The existing LVS/ERC deck is the candidate route for the pending connectivity check. The inspection established deck configuration only. ERC execution and results remain undocumented, and `SubToGround` stays disabled. [Deck inspection](TEST_LEDGER.md#ver-0060) · [Decision](DECISIONS.md#dec-0017)

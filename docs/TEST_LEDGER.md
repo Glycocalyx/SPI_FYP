@@ -355,3 +355,25 @@ ImportError pathlib，改用 python3。
 **2026-11-12 · CKBD16 P+ geometry · CONFIRMED** · [ACT-0029](WORK_LOG.md#act-0029)
 
 底部 contact、DIFF/PIMP/M1 containment、PPLUS_VSS_CANDIDATE 均 123；NWELL containment 0。DIFF/PIMP/CONT Y 范围分别 ±0.21/±0.31/±0.11 µm。部分坐标重复；证据范围为该 master。用户终端输出。
+
+### VER-0060
+
+**LVS_RC deck 配置检查 · USER_REPORTED** · [ACT-0030](WORK_LOG.md#act-0030)
+
+检查对象为 `LVS_RC_Calibre_018um_GenII_1P6M_v1.7p2a`（30k / 1P6M）。`RC_DECK` 默认被注释，RC 相关段落受该宏控制。`FLOATING_WELL_CHECK` 已定义。
+
+`ERC_SELECT_CHECK` 包含以下检查。
+
+- `ERC_FLOATING_GATE_CHECK`
+- `ERC_WELL_TO_PG_CHECK`
+- `ERC_GATE_TO_PG_CHECK`
+- `ERC_DS_TO_PG_CHECK`
+- `ERC_FLOATING_WELL_CHECK`
+
+`ERC_FLOATING_WELL_CHECK` 包含 `floating.HVNW_float`、`floating.nxwell_float` 和 `floating.psub_float`。本条证据限于 deck 静态配置。ERC 运行及结果尚无记录。
+
+### VER-0061
+
+**既有 whole-core contact scan · USER_REPORTED**
+
+既有扫描报告 4036 条 P+ contact 候选，4036 条均匹配带 VSS label 的 M1。证据范围为几何与标签匹配。全 GDS 电气连通性仍待验证。本次同步记录既有结果，原始运行日期未提供。

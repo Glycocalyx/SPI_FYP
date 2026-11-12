@@ -97,3 +97,12 @@ WC fixed-netlist pre-layout 10 MHz slack +39.012 ns；迁移包记录当前没�
 **7A annotation 配置** · [ACT-0019](WORK_LOG.md#act-0019)
 
 启用 Xcelium `+define+NTC+RECREM` 并保留 4 条 XOR2D1 警告；保留供应商模型和原始 SDF。
+
+### DEC-0017
+
+**当前 substrate-to-VSS 验证路线** · [ACT-0030](WORK_LOG.md#act-0030)
+
+- 工程解释为 PEX `ALIAS` 声明用于 extraction layer aliases，其作用域限于提取层映射。
+- 当前衬底接地任务停止继续调查 RC packages。现有 LVS/ERC deck 是 full-GDS substrate-to-VSS 连通性验证的候选路线。
+- 沿用已完成的 [CKBD16 label 检查](TEST_LEDGER.md#ver-0058) 和 [whole-core contact scan](TEST_LEDGER.md#ver-0061)，两项均无需重跑。
+- `SubToGround` 维持关闭。开启前须验证衬底接地，仅消除 `NBL.R.1` 违规不足以作为开启依据。

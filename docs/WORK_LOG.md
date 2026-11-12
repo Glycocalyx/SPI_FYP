@@ -240,3 +240,15 @@ Innovus process 从 90 nm 修正为 180 nm；`VIEW_TT` / `CONSTRAINT_SPI` / `DEL
 - 9 月 1 日回归、9 月 8 日双 Slave directed test 缺少完整执行日志；9 月 9–13 日部分原始命令也缺失。
 - 10 月 13 日 physical run 缺少完整报告，98 与 99 的记录关系未建立。10 月 17 日 GUI 修复缺少完整操作过程。
 - M7D 缺少逐 marker 分类和 `219 (1279)` 的括号统计定义。LVS/ERC/PEX 无运行记录。
+
+## 后续同步
+
+### ACT-0030
+
+**RC / PEX rule 调查 · USER_REPORTED**
+
+检查了 PDK RC rule 位置，并比较了两个 Cadence OA Calibre RCX rule 文件。两者 SHA256 相同，均为 `fdcda784f6bf0ce518d2e8559daf79259d5404c7f6100f0f22b99d8713a86520`。
+
+Mentor 包 `RC_xCalibre_cv018bcd_1p6m_4x1u_mim5_30kutm_typical.tar.gz` 内的规则与 Cadence OA 规则不同。该包包含 rules、QAreport 和 technology metadata。QAreport 标注 `xCalibre v2007.4_14.15`。
+
+来源为本次同步资料，原始执行日期未提供。相关记录见 [LVS_RC deck 检查](TEST_LEDGER.md#ver-0060) 和 [后续验证决策](DECISIONS.md#dec-0017)。
